@@ -26,7 +26,19 @@ async function main() {
   mongoose.connection.close();
 }
 
-async function imageCreate(file, fileTitle, cordX, cordY) {
+// its way more complicated that it should be
+// but simpler than writing it twice
+
+const directory = 'public/images';
+
+async function imageCreate(
+  file,
+  fileTitle,
+  cordX_waldo,
+  cordY_waldo,
+  cordX_wenda,
+  cordY_wenda
+) {
   try {
     if (path.extname(file) === '.jpg' || path.extname(file) === '.png') {
       const filePath = path.join(directory, file);
@@ -39,9 +51,14 @@ async function imageCreate(file, fileTitle, cordX, cordY) {
         contentType: path.extname(file).startsWith('.jpg')
           ? 'image/jpg'
           : 'image/png',
-        cordX,
-        cordY,
+        cordX_waldo,
+        cordY_waldo,
       });
+
+      if (cordX_wenda !== undefined) {
+        newImage.cordX_wenda = cordX_wenda;
+        newImage.cordY_wenda = cordY_wenda;
+      }
 
       await newImage.save();
       console.log('image saved : ' + fileTitle);
@@ -50,11 +67,15 @@ async function imageCreate(file, fileTitle, cordX, cordY) {
     console.log('error uploading image: ' + err);
   }
 }
+
 async function createImages() {
-  const directory = '/images';
   const files = fs.readdirSync(directory);
 
   console.log('adding images');
 
-  await Promise.all([imageCreate(files[0], 'holywood', 50, 50)]);
+  await Promise.all([
+    imageCreate(files[0], 'holywood', 844, 330, 710, 519),
+    imageCreate(files[1], 'battle', 827, 284),
+    imageCreate(files[2], 'skiing', 1027, 550, 590, 322),
+  ]);
 }
