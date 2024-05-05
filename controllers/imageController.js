@@ -18,7 +18,7 @@ exports.images_get = async (req, res, next) => {
 
 exports.image_get = async (req, res, next) => {
   try {
-    const image = await Image.findById(req.body.id).exec();
+    const image = await Image.findById(req.params.id).exec();
     if (!image) {
       res.status(400).json({ success: false, message: 'image was not found' });
     } else {
@@ -33,7 +33,7 @@ exports.image_get = async (req, res, next) => {
 
 exports.found_waldo = async (req, res, next) => {
   try {
-    const image = await Image.findById(req.body.id).select('-data').exec();
+    const image = await Image.findById(req.params.id).select('-data').exec();
     const x = req.body.x;
     const y = req.body.y;
     if (!image) {
@@ -63,7 +63,7 @@ exports.found_waldo = async (req, res, next) => {
 
 exports.found_wenda = async (req, res, next) => {
   try {
-    const image = await Image.findById(req.body.id).select('-data').exec();
+    const image = await Image.findById(req.params.id).select('-data').exec();
     const x = req.body.x;
     const y = req.body.y;
     if (!image) {
