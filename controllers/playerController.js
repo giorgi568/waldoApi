@@ -1,9 +1,9 @@
 const Player = require('../models/player');
 const { body, validationResult } = require('express-validator');
 
-exports.player_get = async (req, res, next) => {
+exports.players_get = async (req, res, next) => {
   try {
-    const players = await Player.find({}).sort({ time: -1 }).exec();
+    const players = await Player.find({}).sort({ time: 1 }).exec();
     if (!players) {
       res.status(400).json({ success: false, message: 'player was not found' });
     } else {
@@ -23,20 +23,29 @@ exports.player_add = [
 
   async (req, res, next) => {
     try {
+      console.log('blbaalb');
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         res.status(400).json({ success: false, message: errors });
       } else {
-        const players = await Player.find({}).sort({ time: -1 }).exec();
+        const players = await Player.find({}).sort({ time: 1 }).exec();
         const player = new Player({
           name: req.body.name,
           time: req.body.time,
         });
+        if (players[4].time < req.body.time) {
+          res.json({ success: false, message: 'no place in leaderboard' });
+        }
         if (players.length < 5) {
           await player.save();
         } else {
-          Player.findOneAndUpdate(players[-1], player);
+          const lastPlayer = players[players.length - 1];
+          await Player.findOneAndUpdate(
+            { _id: lastPlayer._id },
+            { name: req.body.name, time: req.body.time }
+          );
         }
+        res.json({ success: true, message: 'player added' });
       }
     } catch (err) {
       next(err);
